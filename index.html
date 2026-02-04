@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Encore Estate Plans - Demo Tracker</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); min-height: 100vh; padding: 20px; }
+        .container { max-width: 1900px; margin: 0 auto; background: white; border-radius: 12px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); overflow: hidden; }
+        .header { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); color: white; padding: 30px; }
+        .header h1 { font-size: 32px; margin-bottom: 5px; }
+        .header-subtitle { font-size: 14px; opacity: 0.9; }
+        .import-section { margin-top: 15px; }
+        .import-section textarea { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: white; font-size: 13px; min-height: 100px; }
+        .import-section textarea::placeholder { color: rgba(255,255,255,0.6); }
+        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; margin-top: 20px; }
+        .stat-box { background: rgba(255,255,255,0.2); padding: 15px; border-radius: 8px; text-align: center; }
+        .stat-number { font-size: 28px; font-weight: bold; }
+        .stat-label { font-size: 12px; opacity: 0.9; margin-top: 5px; }
+        .content { padding: 30px; display: flex; flex-direction: column; gap: 30px; }
+        .top-section { display: grid; grid-template-columns: 70% 1fr; gap: 20px; }
+        .right-panel { display: flex; flex-direction: column; gap: 20px; }
+        .working-days-config { background: #e0f2fe; padding: 15px; border-radius: 6px; border-left: 4px solid #3b82f6; }
+        .working-days-config h3 { color: #1e3a8a; font-size: 16px; margin-bottom: 10px; }
+        .days-checkboxes { display: flex; gap: 15px; flex-wrap: wrap; }
+        .day-checkbox { display: flex; align-items: center; gap: 5px; }
+        .day-checkbox input { width: 18px; height: 18px; cursor: pointer; }
+        .day-checkbox label { font-size: 14px; cursor: pointer; }
+        .form-section { background: #f8f9fa; padding: 25px; border-radius: 8px; }
+        .form-section h2 { margin-bottom: 5px; color: #333; font-size: 20px; }
+        .form-description { font-size: 13px; color: #666; margin-bottom: 20px; }
+        .form-grid { display: grid; grid-template-columns: 1fr; gap: 15px; margin-bottom: 20px; }
+        .form-group { display: flex; flex-direction: column; }
+        .form-group label { margin-bottom: 5px; font-weight: 500; color: #555; font-size: 13px; }
+        .required { color: #ef4444; }
+        .form-group input, .form-group select { padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; transition: border-color 0.3s; }
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+        .btn { padding: 12px 30px; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+        .btn-primary { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); color: white; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4); }
+        .btn-success { background: #10b981; color: white; padding: 8px 16px; font-size: 12px; }
+        .btn-danger { background: #ef4444; color: white; padding: 8px 16px; font-size: 12px; }
+        .btn-warning { background: #f59e0b; color: white; padding: 12px 30px; }
+        .btn-info { background: #3b82f6; color: white; padding: 8px 16px; font-size: 12px; }
+        .btn-secondary { background: #6b7280; color: white; padding: 12px 30px; }
+        .alert { padding: 12px 20px; border-radius: 6px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .alert-info { background: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; }
+        .general-notes-section { background: #fef3c7; padding: 20px; border-radius: 8px; border-left: 4px solid #f59e0b; }
+        .general-notes-section h3 { color: #92400e; font-size: 18px; margin-bottom: 15px; }
+        .general-note-form { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; }
+        .general-note-form input { padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
+        .general-note-form select { padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; background: white; cursor: pointer; }
+        .general-note-form input:focus, .general-note-form select:focus { outline: none; border-color: #f59e0b; }
+        .general-notes-list { max-height: 400px; overflow-y: auto; }
+        .general-note-item { background: white; padding: 12px; border-radius: 6px; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .general-note-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .general-note-date { font-size: 12px; color: #92400e; font-weight: 600; }
+        .general-note-actions { display: flex; gap: 8px; }
+        .general-note-actions button { background: none; border: none; color: #3b82f6; cursor: pointer; font-size: 12px; padding: 4px 8px; }
+        .general-note-actions button:hover { text-decoration: underline; }
+        .general-note-actions button.delete { color: #ef4444; }
+        .general-note-text { font-size: 14px; color: #333; line-height: 1.5; }
+        .general-note-edit-input { width: 100%; padding: 8px; border: 1px solid #f59e0b; border-radius: 4px; font-size: 14px; }
+        .tasks-section { background: #fff8e1; padding: 20px; border-radius: 8px; border: 2px solid #ffd54f; margin-bottom: 20px; }
+        .tasks-section h3 { color: #f57c00; margin-bottom: 15px; font-size: 18px; }
+        .task-item { background: white; padding: 15px; border-radius: 6px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .task-info { flex: 1; }
+        .task-name { font-weight: 600; color: #333; margin-bottom: 5px; }
+        .task-details { font-size: 13px; color: #666; }
+        .table-section { display: flex; flex-direction: column; }
+        .table-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 15px; }
+        .table-header h2 { color: #333; font-size: 20px; }
+        .filter-group { display: flex; gap: 10px; align-items: center; }
+        .filter-group select { padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
+        table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        thead { background: #f8f9fa; }
+        th { padding: 15px; text-align: left; font-weight: 600; color: #555; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
+        td { padding: 15px; border-top: 1px solid #eee; font-size: 14px; }
+        tbody tr { transition: background 0.2s; }
+        tbody tr:hover { background: #f8f9fa; }
+        .status-badge { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; display: inline-block; }
+        .status-scheduled { background: #dbeafe; color: #1e40af; }
+        .status-completed { background: #d1fae5; color: #065f46; }
+        .status-no-show { background: #fee2e2; color: #991b1b; }
+        .status-rescheduled { background: #fef3c7; color: #92400e; }
+        .checkbox-cell { text-align: center; }
+        .checkbox-cell input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; }
+        .action-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+        .link-button { color: #3b82f6; text-decoration: none; font-weight: 500; cursor: pointer; }
+        .link-button:hover { text-decoration: underline; }
+        .expandable-row { background: #f8f9fa !important; }
+        .details-panel { padding: 20px; background: white; border-left: 4px solid #3b82f6; margin: 10px 15px; border-radius: 6px; }
+        .details-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 20px; }
+        .detail-group h4 { color: #1e3a8a; font-size: 14px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .detail-item { margin-bottom: 10px; }
+        .detail-label { font-size: 12px; color: #666; font-weight: 600; }
+        .detail-value { font-size: 14px; color: #333; margin-top: 2px; }
+        .gmail-embed-section { margin-top: 20px; padding-top: 20px; border-top: 1px solid #e5e7eb; }
+        .gmail-embed-section h4 { color: #1e3a8a; font-size: 14px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .gmail-iframe-container { width: 100%; height: 500px; border: 1px solid #ddd; border-radius: 6px; overflow: hidden; }
+        .gmail-iframe-container iframe { width: 100%; height: 100%; border: none; }
+        .notes-section { margin-top: 20px; padding-top: 20px; border-top: 1px solid #e5e7eb; }
+        .notes-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .notes-header h4 { color: #1e3a8a; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .add-note-form { display: flex; gap: 10px; margin-bottom: 15px; }
+        .add-note-form input { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
+        .add-note-form input:focus { outline: none; border-color: #3b82f6; }
+        .notes-list { max-height: 300px; overflow-y: auto; }
+        .note-item { background: #f8f9fa; padding: 12px; border-radius: 6px; margin-bottom: 10px; border-left: 3px solid #3b82f6; }
+        .note-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+        .note-date { font-size: 12px; color: #666; font-weight: 600; }
+        .note-text { font-size: 14px; color: #333; line-height: 1.5; }
+        .note-delete { background: none; border: none; color: #ef4444; cursor: pointer; font-size: 12px; padding: 4px 8px; }
+        .note-delete:hover { text-decoration: underline; }
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .modal.show { display: flex; justify-content: center; align-items: center; }
+        .modal-content { background: white; padding: 30px; border-radius: 12px; max-width: 500px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.3); animation: slideUp 0.3s; }
+        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .modal-header { margin-bottom: 20px; }
+        .modal-header h3 { color: #1e3a8a; font-size: 20px; margin-bottom: 5px; }
+        .modal-header p { color: #666; font-size: 14px; }
+        .modal-body { margin-bottom: 20px; }
+        .modal-footer { display: flex; gap: 10px; justify-content: flex-end; }
+        .empty-state { text-align: center; padding: 40px; color: #999; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 Encore Estate Plans - Demo Tracker</h1>
+            <div class="header-subtitle">Professional SDR Sales Pipeline Manager</div>
+            <div style="margin-top: 15px; display: flex; gap: 10px; align-items: center;">
+                <button class="btn btn-secondary" onclick="exportData()" style="padding: 8px 16px; font-size: 13px;">📤 Export Backup</button>
+                <button class="btn btn-secondary" onclick="document.getElementById('import-file').click()" style="padding: 8px 16px; font-size: 13px;">📥 Import Backup</button>
+                <input type="file" id="import-file" accept=".json" style="display: none;" onchange="importData(event)">
+                <span id="auto-save-status" style="font-size: 12px; color: rgba(255,255,255,0.8); margin-left: 10px;"></span>
+            </div>
+            <div class="stats">
+                <div class="stat-box"><div class="stat-number" id="stat-total">0</div><div class="stat-label">Total Demos</div></div>
+                <div class="stat-box"><div class="stat-number" id="stat-scheduled">0</div><div class="stat-label">Scheduled</div></div>
+                <div class="stat-box"><div class="stat-number" id="stat-completed">0</div><div class="stat-label">Completed</div></div>
+                <div class="stat-box"><div class="stat-number" id="stat-accounts">0</div><div class="stat-label">Accounts Created</div></div>
+                <div class="stat-box"><div class="stat-number" id="stat-conversion">0%</div><div class="stat-label">Conversion Rate</div></div>
+            </div>
+        </div>
+        <div class="content">
+            <div class="working-days-config">
+                <h3>⏰ Your Working Days</h3>
+                <div class="days-checkboxes">
+                    <div class="day-checkbox"><input type="checkbox" id="day-monday" checked><label for="day-monday">Mon</label></div>
+                    <div class="day-checkbox"><input type="checkbox" id="day-tuesday" checked><label for="day-tuesday">Tue</label></div>
+                    <div class="day-checkbox"><input type="checkbox" id="day-wednesday" checked><label for="day-wednesday">Wed</label></div>
+                    <div class="day-checkbox"><input type="checkbox" id="day-thursday" checked><label for="day-thursday">Thu</label></div>
+                    <div class="day-checkbox"><input type="checkbox" id="day-friday" checked><label for="day-friday">Fri</label></div>
+                    <div class="day-checkbox"><input type="checkbox" id="day-saturday"><label for="day-saturday">Sat</label></div>
+                    <div class="day-checkbox"><input type="checkbox" id="day-sunday"><label for="day-sunday">Sun</label></div>
+                </div>
+            </div>
+            <div class="top-section">
+                <div class="form-section">
+                    <h2 id="form-title">📝 Add New Demo</h2>
+                    <div class="form-description" id="form-description">Track a new demo opportunity</div>
+                    <div class="alert alert-info hidden" id="edit-alert">You are editing a demo. Click "Cancel" to return to add mode.</div>
+                    <form id="demo-form">
+                        <div class="form-grid">
+                            <div class="form-group"><label>First Name <span class="required">*</span></label><input type="text" id="firstName" required></div>
+                            <div class="form-group"><label>Last Name <span class="required">*</span></label><input type="text" id="lastName" required></div>
+                            <div class="form-group"><label>Firm Name <span class="required">*</span></label><input type="text" id="firmName" required></div>
+                            <div class="form-group"><label>Email <span class="required">*</span></label><input type="email" id="email" placeholder="john@firm.com" required></div>
+                            <div class="form-group"><label>Demo Date <span class="required">*</span></label><input type="date" id="demoDate" required></div>
+                            <div class="form-group"><label>Demo Time</label><input type="time" id="demoTime"></div>
+                            <div class="form-group"><label>Status</label><select id="status"><option value="Scheduled">Scheduled</option><option value="Completed">Completed</option><option value="No Show">No Show</option><option value="Rescheduled">Rescheduled</option></select></div>
+                            <div class="form-group"><label>Salesforce Link</label><input type="url" id="salesforceLink" placeholder="https://..."></div>
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <button type="submit" class="btn btn-primary" id="submit-btn">➕ Add Demo</button>
+                            <button type="button" class="btn btn-warning hidden" id="cancel-btn">✖ Cancel</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="general-notes-section">
+                    <h3>📋 General Notes</h3>
+                    <div class="general-note-form">
+                        <input type="text" id="general-note-input" placeholder="Add a general note...">
+                        <select id="general-note-demo-link">
+                            <option value="">-- General (No Demo Link) --</option>
+                        </select>
+                        <button class="btn btn-primary" onclick="addGeneralNote()">Add Note</button>
+                    </div>
+                    <div class="general-notes-list" id="general-notes-list">
+                        <div style="text-align: center; color: #999; padding: 20px;">No general notes yet</div>
+                    </div>
+                </div>
+            </div>
+            </div>
+            <div class="right-panel">
+                <div class="tasks-section hidden" id="tasks-section">
+                    <h3>📋 Upcoming Tasks (<span id="task-count">0</span>)</h3>
+                    <div id="tasks-list"></div>
+                </div>
+                <div>
+                    <div class="table-header">
+                        <h2>📊 All Demos (<span id="demo-count">0</span>)</h2>
+                        <div class="filter-group">
+                            <label>Filter:</label>
+                            <select id="filter-status">
+                                <option value="all">All Demos</option>
+                                <option value="Scheduled">Scheduled</option>
+                                <option value="Completed">Completed</option>
+                                <option value="No Show">No Show</option>
+                                <option value="Rescheduled">Rescheduled</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="empty-state" class="empty-state"><h3>No demos yet</h3><p>Add your first demo using the form on the left!</p></div>
+                    <table id="demos-table" class="hidden">
+                        <thead><tr><th>Name</th><th>Firm</th><th>Email</th><th>Demo Date & Time</th><th>Status</th><th>Account</th><th>Actions</th></tr></thead>
+                        <tbody id="demos-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="task-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">Schedule Follow-up Task</h3>
+                <p id="modal-description">Choose when you want to follow up</p>
+            </div>
+            <div class="modal-body">
+                <div class="form-group"><label>Task Description <span class="required">*</span></label><input type="text" id="task-description" placeholder="e.g., Follow-up, Check-in before demo" required></div>
+                <div class="form-group" style="margin-top: 15px;"><label>Task Date <span class="required">*</span></label><input type="date" id="task-date" required></div>
+                <div class="form-group" style="margin-top: 15px;"><label>Task Time <span class="required">*</span></label><input type="time" id="task-time" value="08:00" required></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeTaskModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveTask()">Create Task</button>
+            </div>
+        </div>
+    </div>
+    <script>
+let demos=[],tasks=[],generalNotes=[],editingId=null,expandedDemo=null,pendingTaskDemo=null,pendingTaskType=null,pendingEditTaskId=null,workingDays={monday:!0,tuesday:!0,wednesday:!0,thursday:!0,friday:!0,saturday:!1,sunday:!1};function loadData(){const e=localStorage.getItem("demos"),t=localStorage.getItem("tasks"),a=localStorage.getItem("generalNotes"),s=localStorage.getItem("workingDays");e&&(demos=JSON.parse(e)),t&&(tasks=JSON.parse(t)),a&&(generalNotes=JSON.parse(a)),s&&(workingDays=JSON.parse(s)),Object.keys(workingDays).forEach(e=>{const t=document.getElementById("day-"+e);t&&(t.checked=workingDays[e])})}function saveData(){localStorage.setItem("demos",JSON.stringify(demos)),localStorage.setItem("tasks",JSON.stringify(tasks)),localStorage.setItem("generalNotes",JSON.stringify(generalNotes)),localStorage.setItem("workingDays",JSON.stringify(workingDays))}function updateStats(){const e=demos.length,t=demos.filter(e=>"Scheduled"===e.status).length,a=demos.filter(e=>"Completed"===e.status).length,s=demos.filter(e=>e.accountCreated).length,n=a>0?((s/a)*100).toFixed(1):0;document.getElementById("stat-total").textContent=e,document.getElementById("stat-scheduled").textContent=t,document.getElementById("stat-completed").textContent=a,document.getElementById("stat-accounts").textContent=s,document.getElementById("stat-conversion").textContent=n+"%"}function getNextWorkingDay(e){const t=new Date(e),a=["sunday","monday","tuesday","wednesday","thursday","friday","saturday"];for(let e=0;e<14;e++)if(t.setDate(t.getDate()+1),workingDays[a[t.getDay()]])return t.toISOString().split("T")[0];return(new Date).toISOString().split("T")[0]}function getPreviousWorkingDay(e){const t=new Date(e),a=["sunday","monday","tuesday","wednesday","thursday","friday","saturday"];for(let e=0;e<14;e++)if(t.setDate(t.getDate()-1),workingDays[a[t.getDay()]])return t.toISOString().split("T")[0];return(new Date).toISOString().split("T")[0]}function showTaskModal(e,t){pendingTaskDemo=e,pendingTaskType=t;const a=document.getElementById("task-modal"),s=document.getElementById("modal-title"),n=document.getElementById("modal-description");let o;"no-show"===t?(s.textContent="Schedule Reschedule Call",n.textContent="Schedule a call to reschedule with "+e.firstName+" "+e.lastName,o="Reschedule call"):"follow-up"===t&&(s.textContent="Schedule Follow-up",n.textContent="Schedule follow-up with "+e.firstName+" "+e.lastName,o="Follow-up from demo");const d=getNextWorkingDay((new Date).toISOString().split("T")[0]);document.getElementById("task-description").value=o,document.getElementById("task-date").value=d,document.getElementById("task-time").value="08:00",a.classList.add("show")}function closeTaskModal(){document.getElementById("task-modal").classList.remove("show"),pendingTaskDemo=null,pendingTaskType=null,pendingEditTaskId=null}function checkForAutoTasks(){const e=new Date;e.setHours(0,0,0,0),demos.forEach(t=>{if("Scheduled"===t.status&&t.demoDate){const a=new Date(t.demoDate),s=Math.ceil((a-e)/864e5);if(s>14&&!t.followUpScheduled){let e=a.toISOString().split("T")[0];for(let t=0;t<3;t++)e=getPreviousWorkingDay(e);const s=e;if(!tasks.some(e=>e.demoId===t.id&&"check-in"===e.type)){const n={id:Date.now(),demoId:t.id,type:"check-in",name:t.firstName+" "+t.lastName,firmName:t.firmName,dueDate:s,dueTime:"08:00",description:"Check-in before demo",demoDate:t.demoDate,demoTime:t.demoTime};tasks.push(n),t.followUpScheduled=!0}}}}),saveData()}function renderTasks(){const e=document.getElementById("tasks-list"),t=document.getElementById("tasks-section"),a=document.getElementById("task-count"),s=[...tasks].sort((e,t)=>{const a=new Date(e.dueDate)-new Date(t.dueDate);return 0!==a?a:e.dueTime.localeCompare(t.dueTime)});if(a.textContent=s.length,0===s.length)return void t.classList.add("hidden");t.classList.remove("hidden"),e.innerHTML="",s.forEach(t=>{const a=document.createElement("div");a.className="task-item";const s="check-in"===t.type?"📞":"follow-up"===t.type?"📧":"🔄";a.innerHTML='\n                    <div class="task-info">\n                        <div class="task-name">'+t.name+" - "+t.description+'</div>\n                        <div class="task-details">\n                            '+t.firmName+" | Due: "+new Date(t.dueDate+"T00:00:00").toLocaleDateString()+" at "+t.dueTime+"\n                            "+(t.demoTime?" | Demo Time: "+t.demoTime:"")+'\n                        </div>\n                    </div>\n                    <div style="display: flex; gap: 8px;">\n                        <button class="btn btn-info" onclick="editTask('+t.id+')">\n                            ✏️ Edit\n                        </button>\n                        <button class="btn btn-info" onclick="addTaskToGoogleCalendar('+t.id+')">\n                            📅 Add to Calendar\n                        </button>\n                        <button class="btn btn-success" onclick="completeTask('+t.id+')">\n                            ✓ Complete\n                        </button>\n                    </div>\n                ',e.appendChild(a)})}window.editTask=function(e){const t=tasks.find(t=>t.id===e);if(!t)return;pendingTaskDemo=null,pendingTaskType="edit",pendingEditTaskId=e;const a=document.getElementById("task-modal"),s=document.getElementById("modal-title"),n=document.getElementById("modal-description");s.textContent="Edit Task",n.textContent="Update the task details",document.getElementById("task-description").value=t.description,document.getElementById("task-date").value=t.dueDate,document.getElementById("task-time").value=t.dueTime,a.classList.add("show")},window.createTaskForDemo=function(e){const t=demos.find(t=>t.id===e);if(!t)return;pendingTaskDemo=t,pendingTaskType="custom",pendingEditTaskId=null;const a=document.getElementById("task-modal"),s=document.getElementById("modal-title"),n=document.getElementById("modal-description");s.textContent="Create Task for "+t.firstName+" "+t.lastName,n.textContent="Choose when you want to follow up",document.getElementById("task-description").value="Follow-up",document.getElementById("task-date").value=getNextWorkingDay((new Date).toISOString().split("T")[0]),document.getElementById("task-time").value="08:00",a.classList.add("show")},window.addTaskToGoogleCalendar=function(e){const t=tasks.find(t=>t.id===e);if(!t)return;const a=new Date(t.dueDate+"T"+t.dueTime),s=new Date(a.getTime()+3600000),n=encodeURIComponent(t.name+" - "+t.description),o=encodeURIComponent(t.firmName+(t.demoDate?" | Demo Date: "+new Date(t.demoDate+"T00:00:00").toLocaleDateString():"")),d=a.toISOString().replace(/-|:|\.\d+/g,""),i=s.toISOString().replace(/-|:|\.\d+/g,"");window.open("https://calendar.google.com/calendar/render?action=TEMPLATE&text="+n+"&details="+o+"&dates="+d+"/"+i,"_blank")},window.completeTask=function(e){tasks=tasks.filter(t=>t.id!==e),saveData(),renderTasks()};function renderDemos(){const e=document.getElementById("filter-status").value;let t=demos;"all"!==e&&(t=demos.filter(t=>t.status===e));const a=[...t].sort((e,t)=>new Date(t.demoDate)-new Date(e.demoDate)),s=document.getElementById("demos-tbody"),n=document.getElementById("demos-table"),o=document.getElementById("empty-state");if(document.getElementById("demo-count").textContent=a.length,0===a.length)return n.classList.add("hidden"),void o.classList.remove("hidden");n.classList.remove("hidden"),o.classList.add("hidden"),s.innerHTML="",a.forEach(e=>{const t=document.createElement("tr");t.setAttribute("data-id",e.id);const a=e.demoTime?'<div style="font-size: 12px; color: #666; margin-top: 2px;">🕐 '+e.demoTime+"</div>":"",n=e.status.toLowerCase().replace(" ","-");if(t.innerHTML="\n                    <td>"+e.firstName+" "+e.lastName+"</td>\n                    <td>"+e.firmName+'</td>\n                    <td>\n                        '+(e.email?'<a href="#" class="link-button" onclick="showEmailInDetails('+e.id+'); return false;" title="View emails in details">📧 View</a>':"")+'\n                    </td>\n                    <td>\n                        <div>'+new Date(e.demoDate+"T00:00:00").toLocaleDateString()+"</div>\n                        "+a+'\n                    </td>\n                    <td>\n                        <span class="status-badge status-'+n+'">'+e.status+'</span>\n                    </td>\n                    <td class="checkbox-cell">\n                        <input type="checkbox" '+(e.accountCreated?"checked":"")+" onchange=\"toggleAccount("+e.id+', this.checked)">\n                        '+(e.accountCreated&&e.accountCreatedDate?'<div style="font-size: 11px; color: #666; margin-top: 2px;">'+new Date(e.accountCreatedDate+"T00:00:00").toLocaleDateString()+"</div>":"")+'\n                    </td>\n                    <td>\n                        <div class="action-buttons">\n                            <button class="btn btn-info" onclick="toggleDetails('+e.id+')">\n                                '+(expandedDemo===e.id?"▲ Hide":"▼ Details")+'\n                            </button>\n                            <button class="btn btn-info" onclick="editDemo('+e.id+')">Edit</button>\n                            <button class="btn btn-danger" onclick="deleteDemo('+e.id+')">Delete</button>\n                        </div>\n                    </td>\n                ',s.appendChild(t),expandedDemo===e.id){const t=document.createElement("tr");t.className="expandable-row",t.innerHTML='\n                        <td colspan="7">\n                            '+renderDetailsPanel(e)+"\n                        </td>\n                    ",s.appendChild(t)}})}function renderDetailsPanel(e){const t=e.notes||[],a=t.length>0?t.map(t=>'\n                    <div class="note-item">\n                        <div class="note-header">\n                            <span class="note-date">📅 '+new Date(t.date+"T00:00:00").toLocaleDateString()+'</span>\n                            <button class="note-delete" onclick="deleteNote('+e.id+", "+t.id+')">Delete</button>\n                        </div>\n                        <div class="note-text">'+t.text+"</div>\n                    </div>\n                ").reverse().join(""):'<div style="text-align: center; color: #999; padding: 20px;">No notes yet. Add your first note above!</div>',s=e.email?"https://mail.google.com/mail/u/0/#search/from%3A"+encodeURIComponent(e.email)+"+OR+to%3A"+encodeURIComponent(e.email):"";return'\n                <div class="details-panel">\n                    <div class="details-grid">\n                        <div class="detail-group">\n                            <h4>Contact Information</h4>\n                            <div class="detail-item">\n                                <div class="detail-label">Full Name</div>\n                                <div class="detail-value">'+e.firstName+" "+e.lastName+'</div>\n                            </div>\n                            <div class="detail-item">\n                                <div class="detail-label">Firm</div>\n                                <div class="detail-value">'+e.firmName+"</div>\n                            </div>\n                            "+(e.email?'\n                            <div class="detail-item">\n                                <div class="detail-label">Email</div>\n                                <div class="detail-value">'+e.email+"</div>\n                            </div>\n                            ":"")+'\n                            <div class="detail-item">\n                                <div class="detail-label">Demo Date & Time</div>\n                                <div class="detail-value">\n                                    '+new Date(e.demoDate+"T00:00:00").toLocaleDateString()+(e.demoTime?" at "+e.demoTime:"")+'\n                                </div>\n                            </div>\n                            '+(e.salesforceLink?'\n                            <div class="detail-item">\n                                <div class="detail-label">Salesforce</div>\n                                <div class="detail-value">\n                                    <a href="'+e.salesforceLink+'" target="_blank" class="link-button">\n                                        View in Salesforce →\n                                    </a>\n                                </div>\n                            </div>\n                            ':"")+'\n                        </div>\n                        <div class="detail-group">\n                            <h4>Additional Info</h4>\n                            <div class="detail-item">\n                                <div class="detail-label">Quick Actions</div>\n                                <div class="detail-value">\n                                    <button class="btn btn-info" onclick="createTaskForDemo('+e.id+')" style="padding: 8px 16px; font-size: 12px;">\n                                        ➕ Create Task\n                                    </button>\n                                </div>\n                            </div>\n                            <div class="detail-item">\n                                <div class="detail-label">Demo Status</div>\n                                <div class="detail-value">\n                                    <select onchange="changeStatus('+e.id+', this.value)" style="padding: 6px; border-radius: 4px; border: 1px solid #ddd;">\n                                        <option value="Scheduled" '+("Scheduled"===e.status?"selected":"")+'>Scheduled</option>\n                                        <option value="Completed" '+("Completed"===e.status?"selected":"")+'>Completed</option>\n                                        <option value="No Show" '+("No Show"===e.status?"selected":"")+'>No Show</option>\n                                        <option value="Rescheduled" '+("Rescheduled"===e.status?"selected":"")+'>Rescheduled</option>\n                                    </select>\n                                </div>\n                            </div>\n                        </div>\n                    </div>\n                    '+(e.email?'\n                    <div class="gmail-embed-section">\n                        <h4>📧 Email Conversations</h4>\n                        <a href="'+s+'" target="_blank" class="btn btn-primary" style="display: inline-block; text-decoration: none;">\n                            Open Gmail Conversation →\n                        </a>\n                    </div>\n                    ':"")+'\n                    <div class="notes-section">\n                        <div class="notes-header">\n                            <h4>📝 Demo Notes</h4>\n                        </div>\n                        <div class="add-note-form">\n                            <input type="text" id="note-input-'+e.id+'" placeholder="Add a note about this demo..." onkeypress="if(event.key===\'Enter\') addNote('+e.id+')">\n                            <button class="btn btn-primary" onclick="addNote('+e.id+')">Add Note</button>\n                        </div>\n                        <div class="notes-list">\n                            '+a+"\n                        </div>\n                    </div>\n                </div>\n            "}function renderGeneralNotes(){const e=document.getElementById("general-notes-list");if(0===generalNotes.length)return void(e.innerHTML='<div style="text-align: center; color: #999; padding: 20px;">No general notes yet</div>');const t=[...generalNotes].sort((e,t)=>new Date(t.timestamp)-new Date(e.timestamp));e.innerHTML=t.map(e=>'\n                <div class="general-note-item" data-note-id="'+e.id+'">\n                    <div class="general-note-header">\n                        <div>\n                            <span class="general-note-date">📅 '+new Date(e.date+"T00:00:00").toLocaleDateString()+"</span>\n                            "+(e.linkedDemoName?'<span style="margin-left: 10px; font-size: 11px; background: #dbeafe; color: #1e40af; padding: 3px 8px; border-radius: 10px;">👤 '+e.linkedDemoName+"</span>":"")+'\n                        </div>\n                        <div class="general-note-actions">\n                            <button onclick="editGeneralNote('+e.id+')">Edit</button>\n                            <button class="delete" onclick="deleteGeneralNote('+e.id+')">Delete</button>\n                        </div>\n                    </div>\n                    <div class="general-note-text">'+e.text+"</div>\n                </div>\n            ").join("")}function populateGeneralNotesDropdown(){const e=document.getElementById("general-note-demo-link");if(!e)return;let t='<option value="">-- General (No Demo Link) --</option>';demos.forEach(e=>{t+=`<option value="${e.id}">${e.firstName} ${e.lastName} - ${e.firmName}</option>`}),e.innerHTML=t}window.saveTask=function(){const e=document.getElementById("task-date").value,t=document.getElementById("task-time").value,a=document.getElementById("task-description").value.trim();if(!e||!t||!a)return void alert("Please fill in all fields");if("edit"===pendingTaskType&&pendingEditTaskId){const s=tasks.find(e=>e.id===pendingEditTaskId);s&&(s.description=a,s.dueDate=e,s.dueTime=t,saveData(),renderTasks(),closeTaskModal());return}const s=pendingTaskDemo;let d;"no-show"===pendingTaskType?(d="reschedule"):"follow-up"===pendingTaskType?(d="follow-up"):"custom"===pendingTaskType&&(d="follow-up");const i={id:Date.now(),demoId:s.id,type:d,name:s.firstName+" "+s.lastName,firmName:s.firmName,dueDate:e,dueTime:t,description:a,demoDate:s.demoDate,demoTime:s.demoTime};tasks.push(i),saveData(),renderTasks(),closeTaskModal()},window.completeTask=function(e){tasks=tasks.filter(t=>t.id!==e),saveData(),renderTasks()},window.showEmailInDetails=function(e){expandedDemo=e,renderDemos(),setTimeout(()=>{const t=document.querySelector('tr[data-id="'+e+'"]');t&&t.scrollIntoView({behavior:"smooth",block:"nearest"})},100)},window.toggleDetails=function(e){expandedDemo=expandedDemo===e?null:e,renderDemos()},window.changeStatus=function(e,t){const a=demos.find(t=>t.id===e);if(!a)return;const s=a.status;a.status=t,"No Show"===t&&"No Show"!==s?(saveData(),updateStats(),renderDemos(),showTaskModal(a,"no-show")):"Completed"===t&&"Completed"!==s?(saveData(),updateStats(),renderDemos(),showTaskModal(a,"follow-up")):(saveData(),updateStats(),renderDemos())},window.toggleAccount=function(e,t){const a=demos.find(t=>t.id===e);a&&(a.accountCreated=t,a.accountCreatedDate=t?(new Date).toISOString().split("T")[0]:null,saveData(),updateStats(),renderDemos())},window.addNote=function(e){const t=document.getElementById("note-input-"+e),a=t.value.trim();if(!a)return;const s=demos.find(t=>t.id===e);s&&(s.notes||(s.notes=[]),s.notes.push({id:Date.now(),text:a,date:(new Date).toISOString().split("T")[0],timestamp:(new Date).toISOString()}),t.value="",saveData(),renderDemos())},window.deleteNote=function(e,t){const a=demos.find(t=>t.id===e);a&&a.notes&&(a.notes=a.notes.filter(e=>e.id!==t),saveData(),renderDemos())},window.editDemo=function(e){const t=demos.find(t=>t.id===e);t&&(editingId=e,document.getElementById("firstName").value=t.firstName,document.getElementById("lastName").value=t.lastName,document.getElementById("firmName").value=t.firmName,document.getElementById("email").value=t.email||"",document.getElementById("demoDate").value=t.demoDate,document.getElementById("demoTime").value=t.demoTime||"",document.getElementById("status").value=t.status,document.getElementById("salesforceLink").value=t.salesforceLink||"",document.getElementById("form-title").textContent="✏️ Edit Demo",document.getElementById("form-description").textContent="Update demo information",document.getElementById("submit-btn").textContent="💾 Update Demo",document.getElementById("cancel-btn").classList.remove("hidden"),document.getElementById("edit-alert").classList.remove("hidden"),window.scrollTo({top:0,behavior:"smooth"}))},window.deleteDemo=function(e){confirm("Are you sure you want to delete this demo?")&&(demos=demos.filter(t=>t.id!==e),tasks=tasks.filter(t=>t.demoId!==e),saveData(),updateStats(),renderTasks(),renderDemos(),populateGeneralNotesDropdown())},window.addGeneralNote=function(){const e=document.getElementById("general-note-input"),t=e.value.trim(),a=document.getElementById("general-note-demo-link").value;if(!t)return;const s={id:Date.now(),text:t,date:(new Date).toISOString().split("T")[0],timestamp:(new Date).toISOString(),linkedDemoId:a||null};a&&(s.linkedDemoName=demos.find(e=>e.id==a)?.firstName+" "+demos.find(e=>e.id==a)?.lastName),generalNotes.push(s),e.value="",document.getElementById("general-note-demo-link").value="",saveData(),renderGeneralNotes()},window.editGeneralNote=function(e){const t=generalNotes.find(t=>t.id===e);if(!t)return;const a=document.querySelector('[data-note-id="'+e+'"]');if(!a)return;const s=a.querySelector(".general-note-text");s.innerHTML='<input type="text" class="general-note-edit-input" value="'+t.text+'" onkeypress="if(event.key===\'Enter\') saveGeneralNoteEdit('+e+', this.value)">',s.querySelector("input").focus()},window.saveGeneralNoteEdit=function(e,t){const a=generalNotes.find(t=>t.id===e);a&&t.trim()&&(a.text=t.trim(),saveData(),renderGeneralNotes())},window.deleteGeneralNote=function(e){generalNotes=generalNotes.filter(t=>t.id!==e),saveData(),renderGeneralNotes()},document.getElementById("demo-form").addEventListener("submit",function(e){e.preventDefault();const t={firstName:document.getElementById("firstName").value,lastName:document.getElementById("lastName").value,firmName:document.getElementById("firmName").value,email:document.getElementById("email").value,demoDate:document.getElementById("demoDate").value,demoTime:document.getElementById("demoTime").value,status:document.getElementById("status").value,salesforceLink:document.getElementById("salesforceLink").value};if(editingId){const e=demos.find(e=>e.id===editingId);e&&(Object.assign(e,t),alert("Demo updated successfully!")),editingId=null,document.getElementById("form-title").textContent="📝 Add New Demo",document.getElementById("form-description").textContent="Track a new demo opportunity",document.getElementById("submit-btn").textContent="➕ Add Demo",document.getElementById("cancel-btn").classList.add("hidden"),document.getElementById("edit-alert").classList.add("hidden")}else demos.push({id:Date.now(),...t,accountCreated:!1,createdAt:(new Date).toISOString(),followUpScheduled:!1,notes:[]}),alert("Demo added successfully!");document.getElementById("demo-form").reset(),saveData(),checkForAutoTasks(),updateStats(),renderTasks(),renderDemos(),populateGeneralNotesDropdown()}),document.getElementById("cancel-btn").addEventListener("click",function(){editingId=null,document.getElementById("demo-form").reset(),document.getElementById("form-title").textContent="📝 Add New Demo",document.getElementById("form-description").textContent="Track a new demo opportunity",document.getElementById("submit-btn").textContent="➕ Add Demo",document.getElementById("cancel-btn").classList.add("hidden"),document.getElementById("edit-alert").classList.add("hidden")}),document.getElementById("filter-status").addEventListener("change",renderDemos),["monday","tuesday","wednesday","thursday","friday","saturday","sunday"].forEach(e=>{const t=document.getElementById("day-"+e);t&&t.addEventListener("change",function(){workingDays[e]=this.checked,saveData()})}),document.getElementById("general-note-input").addEventListener("keypress",function(e){"Enter"===e.key&&addGeneralNote()}),window.exportData=function(){const e={demos:demos,tasks:tasks,generalNotes:generalNotes,workingDays:workingDays,exportDate:new Date().toISOString(),version:"1.0"},t=JSON.stringify(e,null,2),a=new Blob([t],{type:"application/json"}),s=document.createElement("a"),n=new Date().toISOString().split("T")[0];s.href=URL.createObjectURL(a),s.download="demo-tracker-backup-"+n+".json",document.body.appendChild(s),s.click(),document.body.removeChild(s),URL.revokeObjectURL(s.href),alert("Backup exported successfully!")},window.importData=function(e){const t=e.target.files[0];if(!t)return;const a=new FileReader;a.onload=function(e){try{const t=JSON.parse(e.target.result);t.demos&&Array.isArray(t.demos)&&(demos=t.demos),t.tasks&&Array.isArray(t.tasks)&&(tasks=t.tasks),t.generalNotes&&Array.isArray(t.generalNotes)&&(generalNotes=t.generalNotes),t.workingDays&&"object"==typeof t.workingDays&&(workingDays=t.workingDays),saveData(),updateStats(),renderTasks(),renderDemos(),renderGeneralNotes(),populateGeneralNotesDropdown(),alert("Backup imported successfully! "+demos.length+" demos, "+tasks.length+" tasks, "+generalNotes.length+" notes restored.")}catch(e){alert("Error importing backup file. Please make sure it's a valid backup file."),console.error(e)}document.getElementById("import-file").value=""},a.readAsText(t)},window.autoSaveBackup=function(){const e={demos:demos,tasks:tasks,generalNotes:generalNotes,workingDays:workingDays,autoSaveDate:new Date().toISOString(),version:"1.0"};localStorage.setItem("demo-tracker-autosave",JSON.stringify(e));const t=new Date().toLocaleString();document.getElementById("auto-save-status").textContent="💾 Auto-saved: "+t},window.checkAutoSave=function(){const e=localStorage.getItem("demo-tracker-autosave-time");if(e){const t=(new Date).getTime()-parseInt(e);document.getElementById("auto-save-status").textContent="💾 Last backup: "+Math.floor(t/36e5)+" hours ago"}},setInterval(()=>{autoSaveBackup(),localStorage.setItem("demo-tracker-autosave-time",(new Date).getTime().toString())},432e5),window.addEventListener("DOMContentLoaded",function(){loadData(),checkForAutoTasks(),updateStats(),renderTasks(),renderDemos(),renderGeneralNotes(),populateGeneralNotesDropdown(),checkAutoSave(),autoSaveBackup()});
+    </script>
+</body>
+</html>
